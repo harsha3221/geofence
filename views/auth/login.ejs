@@ -1,0 +1,208 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/login.css">
+<script>
+    // Get the server URL from environment
+    const SERVER_URL = '<%= process.env.SERVER_URL %>';
+    
+    // Function to get full URL for any route
+    function getFullUrl(path) {
+        return `${SERVER_URL}${path}`;
+    }
+
+    // Update all href attributes to use SERVER_URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.getElementsByTagName('a');
+        for(let link of links) {
+            if(link.href && link.href.startsWith(window.location.origin)) {
+                const path = link.href.substring(window.location.origin.length);
+                link.href = getFullUrl(path);
+            }
+        }
+    });
+</script>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="login-container">
+        <div class="login-card">
+            <h1>Login</h1>
+            <p class="auth-subtitle">Welcome back! Please login to your account.</p>
+
+            <div id="messageContainer">
+                <% if (errorMessage) { %>
+                    <div class="alert alert-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span><%= errorMessage %></span>
+                    </div>
+                <% } %>
+
+                <% if (successMessage) { %>
+                    <div class="alert alert-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span><%= successMessage %></span>
+                    </div>
+                <% } %>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                <input type="hidden" name="altitude" id="altitude">
+                <input type="hidden" name="accuracy" id="accuracy">
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" name="email" id="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required placeholder="Enter your password">
+                </div>
+
+                <div id="locationStatus" class="location-status"></div>
+
+                <button type="submit" class="login-btn" id="loginButton">
+                    Login
+                    <div class="spinner" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="2" x2="12" y2="6"></line>
+                            <line x1="12" y1="18" x2="12" y2="22"></line>
+                            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                            <line x1="2" y1="12" x2="6" y2="12"></line>
+                            <line x1="18" y1="12" x2="22" y2="12"></line>
+                            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                        </svg>
+                    </div>
+                </button>
+            </form>
+
+            <p class="register-link">Don't have an account? <a href="/auth/register" onclick="event.preventDefault(); window.location.href = getFullUrl('/auth/register');">Register here</a></p>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const locationStatus = document.getElementById('locationStatus');
+            const form = document.getElementById('loginForm');
+            const messageContainer = document.getElementById('messageContainer');
+            const loginButton = document.getElementById('loginButton');
+            const spinner = loginButton.querySelector('.spinner');
+            
+            function showMessage(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type}`;
+                alertDiv.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>${message}</span>
+                `;
+                messageContainer.innerHTML = '';
+                messageContainer.appendChild(alertDiv);
+            }
+
+            // Get location
+            if ("geolocation" in navigator) {
+                updateLocationStatus("Requesting location access...");
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                        document.getElementById('altitude').value = position.coords.altitude || '';
+                        document.getElementById('accuracy').value = position.coords.accuracy || '';
+                        
+                        updateLocationStatus("Location access granted", "success");
+                    },
+                    function(error) {
+                        console.log("Location error:", error);
+                        updateLocationStatus("Location access denied. You can still login.", "warning");
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                updateLocationStatus("Location not available. You can still login.", "warning");
+            }
+
+            // Handle form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                loginButton.disabled = true;
+                spinner.style.display = 'inline-block';
+
+                try {
+                    const formData = new FormData(form);
+                    const data = {};
+                    formData.forEach((value, key) => {
+                        data[key] = value;
+                    });
+
+                    const response = await fetch(`${SERVER_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'CSRF-Token': data._csrf
+                        },
+                        body: JSON.stringify(data),
+                        credentials: 'include'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        const result = await response.json();
+                        if (result.success) {
+                            showMessage(result.message, 'success');
+                            window.location.href = getFullUrl(result.redirectUrl);
+                        } else {
+                            showMessage(result.message || 'Login failed', 'danger');
+                            loginButton.disabled = false;
+                            spinner.style.display = 'none';
+                        }
+                    } else {
+                        // If response is not JSON, handle it as a redirect
+                        const redirectUrl = response.url.replace(window.location.origin, SERVER_URL);
+                        window.location.href = redirectUrl;
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showMessage('An error occurred during login. Please try again.', 'danger');
+                    loginButton.disabled = false;
+                    spinner.style.display = 'none';
+                }
+            });
+
+            function updateLocationStatus(message, type = 'info') {
+                locationStatus.textContent = message;
+                locationStatus.className = `location-status ${type}`;
+            }
+        });
+    </script>
+
+    <%- include('../includes/end.ejs') %>
+</body>
+</html>

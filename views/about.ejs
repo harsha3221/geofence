@@ -1,0 +1,213 @@
+<%- include('includes/header.ejs') %>
+</head>
+<body>
+    <%- include('includes/navigation.ejs') %>
+
+    <main class="container about-container">
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <h1>About GeoAttend</h1>
+            <p class="subtitle">Revolutionizing attendance tracking with cutting-edge geofencing technology</p>
+        </section>
+
+        <!-- Mission Section -->
+        <section class="mission-section">
+            <h2>Our Mission</h2>
+            <p>At GeoAttend, we're committed to revolutionizing the way educational institutions manage attendance. Our geofencing-based attendance system combines cutting-edge technology with user-friendly design to create a seamless experience for both administrators and students.</p>
+        </section>
+
+        <!-- Why Choose Us -->
+        <section class="why-choose-section">
+            <h2>Why Choose GeoAttend?</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>Accuracy</h3>
+                    <p>Our geofencing technology ensures precise location-based attendance tracking, eliminating proxy attendance.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>Efficiency</h3>
+                    <p>Automate attendance tracking and save valuable time for both teachers and students.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>Reliability</h3>
+                    <p>Built with robust technology to handle large-scale deployments with consistent performance.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Section -->
+        <section class="tech-section">
+            <h2>Our Technology</h2>
+            <p>GeoAttend leverages advanced geofencing algorithms and modern web technologies to provide:</p>
+            <ul class="tech-list">
+                <li>Real-time location verification</li>
+                <li>Secure data encryption</li>
+                <li>Cloud-based storage</li>
+                <li>Cross-platform compatibility</li>
+                <li>Scalable architecture</li>
+            </ul>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section">
+            <h2>Get in Touch</h2>
+            <p>Have questions about GeoAttend? We'd love to hear from you!</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span class="icon">📧</span>
+                    <p>support@geoattend.com</p>
+                </div>
+                <div class="contact-item">
+                    <span class="icon">📞</span>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+                <div class="contact-item">
+                    <span class="icon">📍</span>
+                    <p>123 Tech Street, Innovation City</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('includes/end.ejs') %>
+
+    <style>
+        .about-container {
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 0;
+        }
+
+        .about-hero h1 {
+            font-size: 3rem;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        section {
+            margin-bottom: 4rem;
+        }
+
+        h2 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mission-section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-card h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .benefit-card p {
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .tech-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .tech-list li {
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tech-list li:before {
+            content: "✓";
+            color: #4f46e5;
+            font-weight: bold;
+        }
+
+        .contact-section {
+            text-align: center;
+            background: #f7fafc;
+            padding: 3rem;
+            border-radius: 15px;
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .contact-item .icon {
+            font-size: 1.5rem;
+        }
+
+        .contact-item p {
+            color: #4a5568;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            section {
+                margin-bottom: 2rem;
+            }
+
+            .contact-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</body> 

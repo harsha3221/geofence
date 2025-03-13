@@ -1,0 +1,361 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+    background-color: #f4f4f4;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    color: #1a1a1a;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: #333;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Container for the logo and nav links */
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Style the logo */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.navbar-logo span {
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Navigation links container */
+.nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+/* Style the nav links */
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+.nav-links a:hover {
+    background-color: #555;
+}
+
+/* Active link styling */
+.nav-links a.active {
+    background-color: #444;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #4CAF50; /* Green color for logged-in state */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+}
+
+.btn-secondary {
+    background-color: #007BFF; /* Blue color for login/register */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-secondary:hover {
+    background-color: #0056b3;
+}
+
+/* Style the Logout Button */
+nav ul li form button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+/* Logout button hover effect */
+nav ul li form button:hover {
+    background-color: #cc0000;
+}
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+        gap: 0.5rem;
+    }
+
+    .nav-links a {
+        width: 100%;
+        text-align: center;
+    }
+
+    .navbar-logo span {
+        font-size: 20px;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .button-3d {
+        padding: 1rem;
+    }
+    
+    /* Footer Grid on small screens */
+    .footer .grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .footer .contact-list,
+    .footer .links-list {
+        text-align: center;
+    }
+
+    .footer .social-links {
+        justify-content: center;
+    }
+}
+
+/* 3D Button Style */
+.button-3d {
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #6B46C1, #4F46E5);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+}
+
+.button-3d:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.5);
+}
+
+.button-3d:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+}
+
+/* Table Styles */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: rgba(248, 249, 250, 0.9);
+    font-weight: 600;
+}
+
+/* Footer Styling */
+.footer {
+    background-color: #222;
+    color: #fff;
+    padding: 40px 20px;
+    font-size: 14px;
+    margin-top: auto;
+}
+
+.footer .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Company Info */
+.footer .company-info .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.footer .company-info .description {
+    line-height: 1.6;
+    color: #ddd;
+}
+
+/* Contact Information */
+.footer .contact-info .sub-title,
+.footer .quick-links .sub-title,
+.footer .social-media .sub-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.footer .contact-list {
+    list-style: none;
+    padding: 0;
+}
+
+.footer .contact-list .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #ccc;
+    text-decoration: none;
+}
+
+.footer .contact-list .contact-item i {
+    font-size: 18px;
+    color: #fff;
+}
+
+/* Quick Links */
+.footer .quick-links .links-list {
+    list-style: none;
+    padding: 0;
+}
+
+.footer .quick-links .links-list .link-item {
+    color: #ccc;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 8px;
+    transition: color 0.3s ease-in-out;
+}
+
+.footer .quick-links .links-list .link-item:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Social Media Icons */
+.footer .social-links {
+    display: flex;
+    gap: 10px;
+}
+
+.footer .social-links .social-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background-color: #444;
+    border-radius: 50%;
+    transition: background 0.3s ease-in-out;
+}
+
+.footer .social-links .social-item i {
+    color: white;
+    font-size: 16px;
+}
+
+.footer .social-links .social-item:hover {
+    background-color: #666;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+    margin-top: 20px;
+    font-size: 12px;
+    color: #bbb;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.mt-4 {
+    margin-top: 2rem;
+}
+
+.mb-4 {
+    margin-bottom: 2rem;
+}

@@ -1,0 +1,96 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Centering the Card */
+.attendance-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full screen height */
+    padding-top: 50px; /* Adjust gap between navbar and card */
+    margin:180px auto;
+}
+
+.attendance-card {
+    width: 80%;
+    max-width: 700px; /* Max width for large screens */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin:180px auto;
+}
+
+/* Attendance Summary */
+.attendance-summary {
+    background: #eef2f3;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.attendance-summary p {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Table Styles */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.attendance-table th, 
+.attendance-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.attendance-table th {
+    background: #4CAF50;
+    color: white;
+}
+
+.attendance-table .present {
+    background: #c8f7c5;
+}
+
+.attendance-table .absent {
+    background: #f7c5c5;
+}
+
+/* No Records Message */
+.no-records {
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Button Styles */
+button#markAttendanceBtn {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button#markAttendanceBtn:hover {
+    background-color: #45a049;
+}
+
+/* Message Styles */
+.message {
+    margin-top: 10px;
+    font-size: 16px;
+}

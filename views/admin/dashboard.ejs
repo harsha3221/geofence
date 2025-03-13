@@ -1,0 +1,87 @@
+<%- include('../includes/header.ejs') %> <!-- Include header -->
+
+<!-- External CSS specific to this page -->
+<link rel="stylesheet" href="/css/style.css"> <!-- Global styles -->
+<link rel="stylesheet" href="/css/admin-dashboard.css"> <!-- Dashboard specific styles -->
+<script>
+    // Get the server URL from environment
+    const SERVER_URL = '<%= process.env.SERVER_URL %>';
+    
+    // Function to get full URL for any route
+    function getFullUrl(path) {
+        return `${SERVER_URL}${path}`;
+    }
+
+    // Update all href attributes to use SERVER_URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.getElementsByTagName('a');
+        for(let link of links) {
+            if(link.href && link.href.startsWith(window.location.origin)) {
+                const path = link.href.substring(window.location.origin.length);
+                link.href = getFullUrl(path);
+            }
+        }
+
+        // Update form actions
+        const forms = document.getElementsByTagName('form');
+        for(let form of forms) {
+            if(form.action && form.action.startsWith(window.location.origin)) {
+                const path = form.action.substring(window.location.origin.length);
+                form.action = getFullUrl(path);
+            }
+        }
+    });
+</script>
+</head>
+
+<%- include('../includes/navigation.ejs') %> <!-- Include navigation -->
+
+<body>
+    <main class="dashboard-container container">
+        <div class="dashboard-card">
+            <h1>📊 Admin Dashboard</h1>
+            <p class="dashboard-subtitle">Welcome, <%= user.name %>! Manage students and track attendance efficiently.</p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Students</h3>
+                    <p class="stat-number"><%= stats.totalStudents %></p>
+                </div>
+                <div class="stat-card">
+                    <h3>Present Today</h3>
+                    <p class="stat-number"><%= stats.presentToday %></p>
+                </div>
+                <div class="stat-card">
+                    <h3>Absent Today</h3>
+                    <p class="stat-number"><%= stats.absentToday %></p>
+                </div>
+                <div class="stat-card">
+                    <h3>Attendance Rate</h3>
+                    <p class="stat-number"><%= stats.attendanceRate %>%</p>
+                </div>
+            </div>
+
+            <div class="recent-activity">
+                <h2>Recent Activity</h2>
+                <div class="activity-list">
+                    <% recentActivity.forEach(activity => { %>
+                        <div class="activity-item">
+                            <span class="activity-time"><%= activity.time %></span>
+                            <span class="activity-description"><%= activity.description %></span>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/admin/add-student')" class="btn btn-primary">➕ Add Student</a>
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/admin/students')" class="btn btn-secondary">📋 View Students</a>
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/admin/attendance/report')" class="btn btn-secondary">📊 Generate Report</a>
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/admin/take-attendance')" class="btn btn-danger">📍 Take Attendance</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include the end file that will close the body and html tags -->
+    <%- include('../includes/end.ejs') %>
+</body>

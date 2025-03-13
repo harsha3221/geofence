@@ -1,0 +1,75 @@
+<%- include('../includes/header.ejs') %> <!-- Include header, which contains the opening head tag -->
+
+<!-- External CSS specific to this page -->
+<link rel="stylesheet" href="/css/add-student.css"> 
+
+</head> <!-- Close the head tag -->
+
+<%- include('../includes/navigation.ejs') %> <!-- Include navigation bar -->
+
+<body>
+    <main class="form-container container">
+        <div class="form-card">
+            <h1>➕ Add New Student</h1>
+            <p class="form-subtitle">Enter student details below</p>
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <% if (success) { %>
+                <div class="alert alert-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9 12l2 2l4 -4"></path>
+                    </svg>
+                    <span><%= success %></span>
+                </div>
+            <% } %>
+
+            <form id="studentForm" class="student-form" action="/admin/add-student" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                
+                <div class="form-group">
+                    <label for="name">Student Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter student's full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="student@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="rollNo">Roll Number</label>
+                    <input type="text" id="rollNo" name="rollNo" required placeholder="Enter roll number">
+                </div>
+
+                <div class="form-group">
+                    <label for="class">Class</label>
+                    <select id="class" name="class" required>
+                        <option value="">Select Class</option>
+                        <option value="1">Class 1</option>
+                        <option value="2">Class 2</option>
+                        <option value="3">Class 3</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                    <button type="reset" class="btn btn-secondary">Reset Form</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Include the end file that will close the body and html tags -->
+    <%- include('../includes/end.ejs') %>
+</body>

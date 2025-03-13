@@ -1,0 +1,33 @@
+<nav class="navbar">
+    <div class="navbar-brand">
+        <a href="/" class="navbar-logo">
+            <img src="/images/logo.png" alt="Logo">
+            <span>Attendance System</span>
+        </a>
+    </div>
+
+    <div class="nav-links">
+          <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/features">Features</a>
+        <% if (isAuthenticated) { %>
+            <% if (isAdmin) { %>
+                <a href="/admin/dashboard" class="nav-link <%= path === '/admin/dashboard' ? 'active' : '' %>">Dashboard</a>
+                <a href="/admin/students" class="nav-link <%= path === '/admin/students' ? 'active' : '' %>">Students</a>
+                <a href="/admin/attendance" class="nav-link <%= path === '/admin/attendance' ? 'active' : '' %>">Attendance</a>
+            <% } else { %>
+                <a href="/student/dashboard" class="nav-link <%= path === '/student/dashboard' ? 'active' : '' %>">Dashboard</a>
+                <a href="/student/attendance" class="nav-link <%= path === '/student/attendance' ? 'active' : '' %>">My Attendance</a>
+            <% } %>
+            
+            <form action="/auth/logout" method="POST" class="logout-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="nav-link logout-btn">Logout</button>
+            </form>
+        <% } else { %>
+            <a href="/auth/login" class="nav-link <%= path === '/auth/login' ? 'active' : '' %>">Login</a>
+            <a href="/auth/register" class="nav-link <%= path === '/auth/register' ? 'active' : '' %>">Register</a>
+        <% } %>
+    </div>
+</nav>
+

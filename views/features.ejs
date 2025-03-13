@@ -1,0 +1,184 @@
+<%- include('includes/header.ejs') %>
+</head>
+<body>
+    <%- include('includes/navigation.ejs') %>
+
+    <main class="container features-container">
+        <section class="features-hero">
+            <h1>GeoAttend Features</h1>
+            <p class="subtitle">Discover how our advanced geofencing attendance system revolutionizes attendance tracking</p>
+        </section>
+
+        <div class="features-grid">
+            <!-- Geofencing Technology -->
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3>Geofencing Technology</h3>
+                <p>Automatically verify student presence within campus boundaries using precise location tracking</p>
+                <ul>
+                    <li>Accurate location verification</li>
+                    <li>Customizable campus boundaries</li>
+                    <li>Real-time tracking</li>
+                </ul>
+            </div>
+
+            <!-- Automated Attendance -->
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3>Automated Attendance</h3>
+                <p>Streamline attendance marking with our automated system</p>
+                <ul>
+                    <li>One-click attendance marking</li>
+                    <li>Bulk attendance processing</li>
+                    <li>Automatic time stamps</li>
+                </ul>
+            </div>
+
+            <!-- Real-time Analytics -->
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Real-time Analytics</h3>
+                <p>Get instant insights into attendance patterns and statistics</p>
+                <ul>
+                    <li>Detailed attendance reports</li>
+                    <li>Attendance trends analysis</li>
+                    <li>Exportable data formats</li>
+                </ul>
+            </div>
+
+            <!-- User Management -->
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>User Management</h3>
+                <p>Efficiently manage students and administrators</p>
+                <ul>
+                    <li>Role-based access control</li>
+                    <li>Student profile management</li>
+                    <li>Bulk user import/export</li>
+                </ul>
+            </div>
+
+            <!-- Mobile Friendly -->
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Mobile Friendly</h3>
+                <p>Access the system from any device, anywhere</p>
+                <ul>
+                    <li>Responsive design</li>
+                    <li>Cross-platform compatibility</li>
+                    <li>Native-like experience</li>
+                </ul>
+            </div>
+
+            <!-- Security -->
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Enhanced Security</h3>
+                <p>Keep your attendance data safe and secure</p>
+                <ul>
+                    <li>Encrypted data storage</li>
+                    <li>Secure authentication</li>
+                    <li>Activity logging</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <%- include('includes/end.ejs') %>
+
+    <style>
+        .features-container {
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .features-hero h1 {
+            font-size: 2.5rem;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #1a1a1a;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-card ul li {
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .feature-card ul li:before {
+            content: "•";
+            color: #4f46e5;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .features-hero h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body> 

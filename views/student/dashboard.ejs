@@ -1,0 +1,99 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/dashboard.css">
+<script>
+    // Get the server URL from environment
+    const SERVER_URL = '<%= process.env.SERVER_URL %>';
+    
+    // Function to get full URL for any route
+    function getFullUrl(path) {
+        return `${SERVER_URL}${path}`;
+    }
+
+    // Update all href attributes to use SERVER_URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.getElementsByTagName('a');
+        for(let link of links) {
+            if(link.href && link.href.startsWith(window.location.origin)) {
+                const path = link.href.substring(window.location.origin.length);
+                link.href = getFullUrl(path);
+            }
+        }
+    });
+</script>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Welcome, <%= user.name %></h1>
+            <p class="student-info">Roll Number: <%= user.rollNo %></p>
+        </div>
+
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>Total Classes</h3>
+                <p class="stat-number"><%= totalClasses %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Classes Attended</h3>
+                <p class="stat-number"><%= classesAttended %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Attendance Percentage</h3>
+                <p class="stat-number"><%= attendancePercentage %>%</p>
+            </div>
+        </div>
+
+        <div class="recent-attendance">
+            <h2>Recent Attendance</h2>
+            <div class="attendance-list">
+                <% if (recentAttendance && recentAttendance.length > 0) { %>
+                    <% recentAttendance.forEach(record => { %>
+                        <div class="attendance-item">
+                            <div class="attendance-date">
+                                <%= new Date(record.date).toLocaleDateString('en-US', { 
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                }) %>
+                            </div>
+                            <div class="attendance-status <%= record.status.toLowerCase() %>">
+                                <%= record.status %>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="no-records">No recent attendance records found.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/student/mark-attendance')" class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    Mark Attendance
+                </a>
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/student/attendance')" class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    View Full History
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../includes/end.ejs') %>
+</body>
+</html>

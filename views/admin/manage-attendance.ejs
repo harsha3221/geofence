@@ -1,0 +1,131 @@
+<%- include('../includes/header.ejs') %>
+</head>
+
+<body class="dashboard-page">
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="container">
+        <div class="card">
+            <h1>📊 Manage Attendance</h1>
+            <p class="subtitle">View and manage student attendance records</p>
+
+            <!-- Flash Messages -->
+            <% if (error) { %>
+                <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+            <% if (success) { %>
+                <div class="alert alert-success"><%= success %></div>
+            <% } %>
+
+            <!-- Student Records -->
+            <div class="student-records">
+                <% if (students && students.length > 0) { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Name</th>
+                                <th>Total Present</th>
+                                <th>Total Absent</th>
+                                <th>Last Attendance</th>
+                                <th>Location Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% students.forEach(student => { %>
+                                <tr>
+                                    <td><%= student.rollNo %></td>
+                                    <td><%= student.name %></td>
+                                    <td>
+                                        <span class="badge badge-success">
+                                            <%= student.attendance.filter(a => a.status === 'Present').length %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-danger">
+                                            <%= student.attendance.filter(a => a.status === 'Absent').length %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <% 
+                                            const lastAttendance = student.attendance.length > 0 
+                                                ? student.attendance[student.attendance.length - 1] 
+                                                : null;
+                                        %>
+                                        <% if (lastAttendance) { %>
+                                            <%= new Date(lastAttendance.date).toLocaleDateString() %>
+                                            <%= new Date(lastAttendance.date).toLocaleTimeString() %>
+                                            <span class="badge <%= lastAttendance.status === 'Present' ? 'badge-success' : 'badge-danger' %>">
+                                                <%= lastAttendance.status %>
+                                            </span>
+                                        <% } else { %>
+                                            No records
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (lastAttendance && lastAttendance.location) { %>
+                                            <button class="button-3d" 
+                                                onclick="showLocation('<%= lastAttendance.location.latitude %>', '<%= lastAttendance.location.longitude %>')">
+                                                View Location
+                                            </button>
+                                        <% } else { %>
+                                            No location data
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } else { %>
+                    <p class="no-records">No student records found.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Location Modal -->
+        <div class="modal" id="locationModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Location Details</h5>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div id="locationDetails"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../includes/end.ejs') %>
+
+    <script>
+        // Get modal elements
+        const modal = document.getElementById('locationModal');
+        const closeBtn = document.querySelector('.close');
+
+        // Close modal when clicking the close button
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function showLocation(latitude, longitude) {
+            const locationDetails = document.getElementById('locationDetails');
+            locationDetails.innerHTML = `
+                <p><strong>Latitude:</strong> ${latitude}</p>
+                <p><strong>Longitude:</strong> ${longitude}</p>
+                <p><a href="https://www.google.com/maps?q=${latitude},${longitude}" 
+                      target="_blank" class="button-3d">
+                    View on Google Maps
+                </a></p>
+            `;
+            modal.style.display = "block";
+        }
+    </script>
+</body> 

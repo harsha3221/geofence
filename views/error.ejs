@@ -1,0 +1,29 @@
+<%- include('includes/header.ejs') %>
+<link rel="stylesheet" href="/css/error.css">
+</head>
+<body>
+    <%- include('includes/navigation.ejs') %>
+    <main class="error-container">
+        <div class="error-card">
+            <h1>Error</h1>
+            <% if (error) { %>
+                <div class="alert alert-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+            <p>Please try one of the following:</p>
+            <ul>
+                <li>Go back and try again</li>
+                <li><a href="/">Return to home page</a></li>
+                <li><a href="/auth/login">Login again</a></li>
+            </ul>
+        </div>
+    </main>
+    <%- include('includes/end.ejs') %>
+</body>
+</html> 

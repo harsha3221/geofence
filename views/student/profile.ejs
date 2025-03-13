@@ -1,0 +1,26 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/profile.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="profile-container">
+        <h1>Student Profile</h1>
+        
+        <div class="profile-card">
+            <% if (student) { %>
+                <p><strong>Name:</strong> <%= student.name %></p>
+                <p><strong>Email:</strong> <%= student.email %></p>
+                <p><strong>Roll Number:</strong> <%= student.rollNo %></p>
+                <p><strong>Attendance Percentage:</strong> <%= student.attendancePercentage %>%</p>
+            <% } else { %>
+                <p class="error-message">⚠️ No user profile found. Please log in.</p>
+            <% } %>
+        </div>
+        
+
+        <a href="/student/edit-profile" class="edit-btn">Edit Profile</a>
+    </main>
+
+    <%- include('../includes/end.ejs') %>

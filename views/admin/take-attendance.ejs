@@ -1,0 +1,521 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/attendance.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="container">
+        <h1>Take Attendance</h1>
+
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (success) { %>
+            <div class="alert alert-success">
+                <%= success %>
+            </div>
+        <% } %>
+
+        <!-- Take Attendance Controls -->
+        <div class="attendance-controls">
+            <button id="requestLocations" class="primary-btn">
+                Request Student Locations
+            </button>
+            <div class="refresh-info">
+                Last refreshed: <span id="lastRefresh">Never</span>
+                <button onclick="refreshAttendance()" class="refresh-btn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="attendance-summary">
+            <div class="summary-item">
+                <span>Total Students:</span>
+                <span><%= summary.total %></span>
+            </div>
+            <div class="summary-item">
+                <span>Present:</span>
+                <span id="presentCount"><%= summary.present %></span>
+            </div>
+            <div class="summary-item">
+                <span>Not Marked:</span>
+                <span id="notMarkedCount"><%= summary.notMarked %></span>
+            </div>
+        </div>
+
+        <div class="student-list">
+            <% summary.students.forEach(student => { %>
+                <div class="student-card" id="student-<%= student.id %>">
+                    <div class="student-info">
+                        <h3><%= student.name %></h3>
+                        <p>Roll No: <%= student.rollNo %></p>
+                        <p class="status <%= student.status === 'Present' ? 'present' : '' %>">
+                            Status: <span class="status-text"><%= student.status %></span>
+                        </p>
+                        <p class="location-info">
+                            Location: <span class="location-status">Not Available</span>
+                        </p>
+                        <p class="last-update">
+                            Last Updated: <span class="update-time">Never</span>
+                        </p>
+                    </div>
+                    <div class="action-buttons">
+                        <button 
+                            onclick="markAttendance('<%= student.id %>')" 
+                            class="mark-btn"
+                            id="mark-btn-<%= student.id %>"
+                            disabled>
+                            Mark Present
+                        </button>
+                        <button 
+                            onclick="markAbsent('<%= student.id %>')" 
+                            class="absent-btn"
+                            id="absent-btn-<%= student.id %>">
+                            Mark Absent
+                        </button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </main>
+
+    <script>
+    let studentsData = {};
+    const REFRESH_INTERVAL = 30000; // 30 seconds
+    let refreshTimer;
+
+    // Initialize student data
+    <% summary.students.forEach(student => { %>
+        studentsData['<%= student.id %>'] = {
+            id: '<%= student.id %>',
+            name: '<%= student.name %>',
+            status: '<%= student.status %>',
+            location: null,
+            lastUpdate: null
+        };
+    <% }); %>
+
+    async function requestLocations() {
+        try {
+            const response = await fetch('/admin/request-locations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': '<%= csrfToken %>'
+                }
+            });
+
+            if (response.ok) {
+                updateLastRefresh();
+                startPolling();
+            }
+        } catch (error) {
+            console.error('Error requesting locations:', error);
+            alert('Failed to request student locations');
+        }
+    }
+
+    async function refreshAttendance() {
+        try {
+            const response = await fetch('/admin/get-student-locations', {
+                headers: {
+                    'CSRF-Token': '<%= csrfToken %>'
+                }
+            });
+
+            const data = await response.json();
+            updateStudentLocations(data.students);
+            updateLastRefresh();
+        } catch (error) {
+            console.error('Error refreshing attendance:', error);
+        }
+    }
+
+    function updateStudentLocations(students) {
+        students.forEach(student => {
+            const card = document.getElementById(`student-${student.id}`);
+            if (!card) return;
+
+            const statusText = card.querySelector('.status-text');
+            const locationStatus = card.querySelector('.location-status');
+            const updateTime = card.querySelector('.update-time');
+            const markBtn = document.getElementById(`mark-btn-${student.id}`);
+
+            // Update location status
+            if (student.location) {
+                locationStatus.textContent = student.location.isWithinBoundary ? 
+                    'Within Classroom' : 'Outside Classroom';
+                locationStatus.className = `location-status ${student.location.isWithinBoundary ? 'valid' : 'invalid'}`;
+                
+                // Enable/disable mark present button based on location
+                markBtn.disabled = !student.location.isWithinBoundary || student.status === 'Present';
+                
+                updateTime.textContent = new Date(student.location.timestamp).toLocaleTimeString();
+            } else {
+                locationStatus.textContent = 'Not Available';
+                locationStatus.className = 'location-status';
+                markBtn.disabled = true;
+                updateTime.textContent = 'Never';
+            }
+
+            // Update status
+            if (student.status) {
+                statusText.textContent = student.status;
+                statusText.className = `status-text ${student.status.toLowerCase()}`;
+            }
+        });
+
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const total = Object.keys(studentsData).length;
+        const present = Object.values(studentsData).filter(s => s.status === 'Present').length;
+        
+        document.getElementById('presentCount').textContent = present;
+        document.getElementById('notMarkedCount').textContent = total - present;
+    }
+
+    function updateLastRefresh() {
+        document.getElementById('lastRefresh').textContent = new Date().toLocaleTimeString();
+    }
+
+    async function markAttendance(studentId) {
+        try {
+            const student = studentsData[studentId];
+            if (!student || !student.location) {
+                alert('Cannot mark attendance: Student location not available');
+                return;
+            }
+
+            const response = await fetch('/admin/take-attendance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': '<%= csrfToken %>'
+                },
+                body: JSON.stringify({
+                    studentId,
+                    ...student.location
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                student.status = 'Present';
+                updateStudentLocations([{ id: studentId, status: 'Present', location: student.location }]);
+            } else {
+                alert(data.message || 'Failed to mark attendance');
+            }
+        } catch (error) {
+            console.error('Error marking attendance:', error);
+            alert('Failed to mark attendance');
+        }
+    }
+
+    async function markAbsent(studentId) {
+        try {
+            const response = await fetch('/admin/mark-absent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': '<%= csrfToken %>'
+                },
+                body: JSON.stringify({ studentId })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                studentsData[studentId].status = 'Absent';
+                updateStudentLocations([{ id: studentId, status: 'Absent' }]);
+            } else {
+                alert(data.message || 'Failed to mark absent');
+            }
+        } catch (error) {
+            console.error('Error marking absent:', error);
+            alert('Failed to mark absent');
+        }
+    }
+
+    function startPolling() {
+        if (refreshTimer) clearInterval(refreshTimer);
+        refreshTimer = setInterval(refreshAttendance, REFRESH_INTERVAL);
+        refreshAttendance(); // Initial refresh
+    }
+
+    // Event Listeners
+    document.getElementById('requestLocations').addEventListener('click', requestLocations);
+
+    // Start polling when page loads
+    startPolling();
+
+    // Function to request student location
+    async function requestStudentLocation(studentId) {
+        try {
+            const response = await fetch(`/admin/request-location/${studentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to request location');
+            }
+            
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Location request sent to student', 'success');
+                // Start polling for location updates
+                startLocationPolling(studentId);
+            } else {
+                showNotification(data.message || 'Failed to request location', 'error');
+            }
+        } catch (error) {
+            console.error('Error requesting location:', error);
+            showNotification('Failed to request location', 'error');
+        }
+    }
+
+    // Function to poll for location updates
+    function startLocationPolling(studentId) {
+        const pollInterval = setInterval(async () => {
+            try {
+                const response = await fetch(`/admin/student-location/${studentId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to get location');
+                }
+                
+                const data = await response.json();
+                if (data.location) {
+                    // Update the location display
+                    const locationElement = document.querySelector(`#student-${studentId} .location-info`);
+                    if (locationElement) {
+                        locationElement.textContent = `Last seen: ${new Date(data.location.timestamp).toLocaleTimeString()}`;
+                    }
+                    
+                    // Check if location is within boundaries
+                    const locationCheck = await verifyLocation(data.location.latitude, data.location.longitude);
+                    if (locationCheck.isValid) {
+                        // Enable the Mark Present button
+                        const markPresentBtn = document.querySelector(`#student-${studentId} .mark-present-btn`);
+                        if (markPresentBtn) {
+                            markPresentBtn.disabled = false;
+                            markPresentBtn.classList.remove('disabled');
+                        }
+                        // Stop polling once we have a valid location
+                        clearInterval(pollInterval);
+                    }
+                }
+            } catch (error) {
+                console.error('Error polling location:', error);
+                clearInterval(pollInterval);
+            }
+        }, 5000); // Poll every 5 seconds
+    }
+
+    // Function to verify location
+    async function verifyLocation(latitude, longitude) {
+        try {
+            const response = await fetch('/admin/verify-location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ latitude, longitude })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to verify location');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error verifying location:', error);
+            return { isValid: false, message: 'Failed to verify location' };
+        }
+    }
+
+    // Function to mark attendance
+    async function markAttendance(studentId, lastLocation) {
+        if (!lastLocation) {
+            showNotification('Student location not available', 'error');
+            return;
+        }
+
+        try {
+            // First verify the location
+            const locationCheck = await verifyLocation(lastLocation.latitude, lastLocation.longitude);
+            if (!locationCheck.isValid) {
+                showNotification(locationCheck.message || 'Student is not within classroom boundaries', 'error');
+                return;
+            }
+
+            const response = await fetch('/admin/take-attendance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    studentId,
+                    latitude: lastLocation.latitude,
+                    longitude: lastLocation.longitude,
+                    altitude: lastLocation.altitude,
+                    accuracy: lastLocation.accuracy
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to mark attendance');
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Attendance marked successfully', 'success');
+                // Update the attendance status in the UI
+                const statusElement = document.querySelector(`#student-${studentId} .attendance-status`);
+                if (statusElement) {
+                    statusElement.textContent = 'Present';
+                    statusElement.classList.add('present');
+                }
+            } else {
+                showNotification(data.message || 'Failed to mark attendance', 'error');
+            }
+        } catch (error) {
+            console.error('Error marking attendance:', error);
+            showNotification('Failed to mark attendance', 'error');
+        }
+    }
+
+    // Function to show notifications
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+    </script>
+
+    <style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .attendance-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .primary-btn {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .primary-btn:hover {
+        background: #45a049;
+    }
+
+    .refresh-btn {
+        background: none;
+        border: 1px solid #ddd;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+
+    .refresh-btn:hover {
+        background: #f1f1f1;
+    }
+
+    .location-status {
+        font-weight: 500;
+    }
+
+    .location-status.valid {
+        color: #28a745;
+    }
+
+    .location-status.invalid {
+        color: #dc3545;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .mark-btn, .absent-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .mark-btn {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .mark-btn:disabled {
+        background: #cccccc;
+        cursor: not-allowed;
+    }
+
+    .absent-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .absent-btn:hover {
+        background: #c82333;
+    }
+
+    .status-text {
+        font-weight: 500;
+    }
+
+    .status-text.present {
+        color: #28a745;
+    }
+
+    .status-text.absent {
+        color: #dc3545;
+    }
+
+    .last-update {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    </style>
+
+    <%- include('../includes/end.ejs') %>
+</body>
+</html> 

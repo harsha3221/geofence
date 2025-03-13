@@ -1,0 +1,86 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/features.css"> 
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <!-- Main content area -->
+    <main class="features-container">
+        <div class="container">
+            <div class="section-header">
+                <h1 class="title">Features of Geofencing Attendance System</h1>
+                <p class="description">
+                    Discover how our advanced geofencing technology revolutionizes attendance tracking with these powerful features.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Real-Time Geofencing -->
+                <div class="feature-card">
+                    <div class="icon">
+                        <img src="/images/icons/geofencing.png" alt="Geofencing Attendance">
+                    </div>
+                    <h3>Real-Time Geofencing Attendance</h3>
+                    <p>Track attendance automatically when users enter predefined geofence areas.</p>
+                </div>
+
+                <!-- Admin Dashboard -->
+                <div class="feature-card">
+                    <div class="icon">
+                        <img src="/images/icons/dashboard.png" alt="Admin Dashboard">
+                    </div>
+                    <h3>Admin Dashboard</h3>
+                    <p>Comprehensive dashboard for managing attendance and viewing reports.</p>
+                </div>
+
+                <!-- Secure Attendance -->
+                <div class="feature-card">
+                    <div class="icon">
+                        <img src="/images/icons/security.png" alt="Secure Attendance">
+                    </div>
+                    <h3>Secure Attendance</h3>
+                    <p>Prevent proxy attendance with location-based verification.</p>
+                </div>
+
+                <!-- Push Notifications -->
+                <div class="feature-card">
+                    <div class="icon">
+                        <img src="/images/icons/notification.png" alt="Push Notifications">
+                    </div>
+                    <h3>Push Notifications</h3>
+                    <p>Instant alerts for attendance marking and updates.</p>
+                </div>
+
+                <!-- Data Analytics -->
+                <div class="feature-card">
+                    <div class="icon">
+                        <img src="/images/icons/analytics.png" alt="Data Analytics">
+                    </div>
+                    <h3>Data Analytics</h3>
+                    <p>Detailed insights and trends analysis for attendance patterns.</p>
+                </div>
+
+                <!-- Mobile Integration -->
+                <div class="feature-card">
+                    <div class="icon">
+                        <img src="/images/icons/mobile.png" alt="Mobile App Integration">
+                    </div>
+                    <h3>Mobile App Integration</h3>
+                    <p>Seamless mobile experience for marking attendance on the go.</p>
+                </div>
+            </div>
+
+            <% if (user) { %>
+                <p class="text-center mt-8">You're logged in, <%= user.name %>! Enjoy all the features.</p>
+            <% } else { %>
+                <p class="text-center mt-8">Please <a href="/login">log in</a> to unlock all features.</p>
+            <% } %>
+
+            <div class="cta-button">
+                <a href="/get-started" class="btn-primary">Get Started Now</a>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../includes/end.ejs') %>
+
+</body>

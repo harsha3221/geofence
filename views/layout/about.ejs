@@ -1,0 +1,135 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/about.css"> 
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="about-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="container">
+                <h1 class="title">About GeoAttend</h1>
+                <p class="subtitle">Revolutionizing attendance tracking with cutting-edge geofencing technology</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Mission Section -->
+            <section class="mission-section">
+                <div class="section-content">
+                    <h2>Our Mission</h2>
+                    <p>At GeoAttend, we're committed to revolutionizing the way educational institutions manage attendance. Our geofencing-based attendance system combines cutting-edge technology with user-friendly design to create a seamless experience for both administrators and students.</p>
+                </div>
+            </section>
+
+            <!-- Core Values Section -->
+            <section class="values-section">
+                <h2 class="section-title">Why Choose GeoAttend?</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <div class="icon">
+                            <img src="/images/icons/accuracy.png" alt="Accuracy Icon">
+                        </div>
+                        <h3>Accuracy</h3>
+                        <p>Our geofencing technology ensures precise location-based attendance tracking, eliminating proxy attendance.</p>
+                    </div>
+
+                    <div class="value-card">
+                        <div class="icon">
+                            <img src="/images/icons/efficiency.png" alt="Efficiency Icon">
+                        </div>
+                        <h3>Efficiency</h3>
+                        <p>Automate attendance tracking and save valuable time for both teachers and students.</p>
+                    </div>
+
+                    <div class="value-card">
+                        <div class="icon">
+                            <img src="/images/icons/reliability.png" alt="Reliability Icon">
+                        </div>
+                        <h3>Reliability</h3>
+                        <p>Built with robust technology to handle large-scale deployments with consistent performance.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technology Section -->
+            <section class="tech-section">
+                <div class="section-content">
+                    <h2>Our Technology</h2>
+                    <div class="tech-grid">
+                        <div class="tech-info">
+                            <p>GeoAttend leverages advanced geofencing algorithms and modern web technologies to provide a comprehensive attendance management solution.</p>
+                            <ul class="tech-list">
+                                <li>Real-time location verification</li>
+                                <li>Secure data encryption</li>
+                                <li>Cloud-based storage</li>
+                                <li>Cross-platform compatibility</li>
+                                <li>Scalable architecture</li>
+                            </ul>
+                        </div>
+                        <div class="tech-image">
+                            <img src="/images/tech-illustration.png" alt="Technology Illustration">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Team Section -->
+            <section class="team-section">
+                <h2 class="section-title">Meet Our Team</h2>
+                <div class="team-grid">
+                    <% teamMembers.forEach(function(member) { %>
+                        <div class="team-card">
+                            <div class="member-image">
+                                <img src="<%= member.image %>" alt="<%= member.name %>">
+                            </div>
+                            <div class="member-info">
+                                <h3><%= member.name %></h3>
+                                <p class="role"><%= member.role %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </section>
+
+            <!-- Timeline Section -->
+            <section class="timeline-section">
+                <h2 class="section-title">Our Journey</h2>
+                <div class="timeline">
+                    <% milestones.forEach(function(milestone) { %>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <span class="year"><%= milestone.year %></span>
+                                <h3><%= milestone.title %></h3>
+                                <p><%= milestone.description %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section class="contact-section">
+                <div class="contact-content">
+                    <h2>Get in Touch</h2>
+                    <p>Have questions about GeoAttend? We'd love to hear from you!</p>
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <div class="icon">📧</div>
+                            <p>support@geoattend.com</p>
+                        </div>
+                        <div class="contact-item">
+                            <div class="icon">📞</div>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                        <div class="contact-item">
+                            <div class="icon">📍</div>
+                            <p>123 Tech Street, Innovation City</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <%- include('../includes/end.ejs') %>
+</body>

@@ -1,0 +1,123 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/students.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="container">
+        <h1>Student List</h1>
+
+        <div class="students-grid">
+            <% students.forEach(student => { %>
+                <div class="student-card">
+                    <div class="student-info">
+                        <h3><%= student.name %></h3>
+                        <p class="roll-no">Roll No: <%= student.rollNo %></p>
+                        <p class="email"><%= student.email %></p>
+                    </div>
+                    <div class="attendance-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Days</span>
+                            <span class="stat-value"><%= student.totalDays %></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Present Days</span>
+                            <span class="stat-value"><%= student.presentDays %></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Attendance</span>
+                            <span class="stat-value <%= parseFloat(student.attendancePercentage) < 75 ? 'low-attendance' : '' %>">
+                                <%= student.attendancePercentage %>%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </main>
+
+    <style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    h1 {
+        margin-bottom: 2rem;
+        color: #333;
+    }
+
+    .students-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .student-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        transition: transform 0.2s;
+    }
+
+    .student-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .student-info h3 {
+        margin: 0 0 0.5rem;
+        color: #333;
+    }
+
+    .roll-no {
+        color: #666;
+        font-size: 0.9rem;
+        margin: 0.25rem 0;
+    }
+
+    .email {
+        color: #666;
+        font-size: 0.9rem;
+        margin: 0.25rem 0;
+        word-break: break-all;
+    }
+
+    .attendance-stats {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .low-attendance {
+        color: #dc3545;
+    }
+    </style>
+
+    <%- include('../includes/end.ejs') %>
+</body>

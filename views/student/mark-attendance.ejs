@@ -1,0 +1,174 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/mark-attendance.css">
+<script>
+    // Get the server URL from environment
+    const SERVER_URL = '<%= process.env.SERVER_URL %>';
+    
+    // Function to get full URL for any route
+    function getFullUrl(path) {
+        return `${SERVER_URL}${path}`;
+    }
+
+    // Update all href attributes to use SERVER_URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.getElementsByTagName('a');
+        for(let link of links) {
+            if(link.href && link.href.startsWith(window.location.origin)) {
+                const path = link.href.substring(window.location.origin.length);
+                link.href = getFullUrl(path);
+            }
+        }
+
+        const form = document.getElementById('attendanceForm');
+        const submitButton = document.getElementById('submitButton');
+        const spinner = submitButton.querySelector('.spinner');
+        const locationStatus = document.getElementById('locationStatus');
+
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>${message}</span>
+            `;
+            messageContainer.innerHTML = '';
+            messageContainer.appendChild(alertDiv);
+        }
+
+        function updateLocationStatus(message, type = 'info') {
+            locationStatus.textContent = message;
+            locationStatus.className = `location-status ${type}`;
+        }
+
+        // Get location
+        if ("geolocation" in navigator) {
+            updateLocationStatus("Requesting location access...");
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    document.getElementById('altitude').value = position.coords.altitude || '';
+                    document.getElementById('accuracy').value = position.coords.accuracy || '';
+                    
+                    updateLocationStatus("Location access granted", "success");
+                },
+                function(error) {
+                    console.error("Location error:", error);
+                    updateLocationStatus("Location access denied. Cannot mark attendance without location.", "error");
+                    submitButton.disabled = true;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            updateLocationStatus("Location not available. Cannot mark attendance.", "error");
+            submitButton.disabled = true;
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            submitButton.disabled = true;
+            spinner.style.display = 'inline-block';
+
+            try {
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                const response = await fetch(`${SERVER_URL}/student/mark-attendance`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': data._csrf
+                    },
+                    body: JSON.stringify(data),
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = getFullUrl('/student/dashboard');
+                    }, 2000);
+                } else {
+                    showMessage(result.message || 'Failed to mark attendance', 'danger');
+                    submitButton.disabled = false;
+                    spinner.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error marking attendance:', error);
+                showMessage('An error occurred while marking attendance. Please try again.', 'danger');
+                submitButton.disabled = false;
+                spinner.style.display = 'none';
+            }
+        });
+    });
+</script>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main class="attendance-container">
+        <div class="attendance-card">
+            <h1>Mark Attendance</h1>
+            <p class="attendance-subtitle">Please confirm your location to mark attendance</p>
+
+            <div id="messageContainer">
+                <% if (errorMessage) { %>
+                    <div class="alert alert-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span><%= errorMessage %></span>
+                    </div>
+                <% } %>
+            </div>
+
+            <form id="attendanceForm" class="attendance-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                <input type="hidden" name="altitude" id="altitude">
+                <input type="hidden" name="accuracy" id="accuracy">
+
+                <div id="locationStatus" class="location-status"></div>
+
+                <button type="submit" class="submit-btn" id="submitButton">
+                    Mark Attendance
+                    <div class="spinner" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <%- include('../includes/end.ejs') %>
+</body>
+</html> 

@@ -1,0 +1,170 @@
+/* General Section Styles */
+.container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+h1, h2, h3 {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+h4 {
+    font-family: 'Arial', sans-serif;
+    color: #666;
+}
+
+/* Hero Section */
+.hero {
+    background: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 60px 0;
+}
+
+.hero h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.hero-buttons a, .hero-buttons button {
+    margin: 0 10px;
+    padding: 15px 25px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.hero-buttons .btn-primary {
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.hero-buttons .btn-secondary {
+    background-color: #FFC107;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+/* How It Works Section */
+.how-it-works {
+    padding: 60px 0;
+    background-color: #f9f9f9;
+}
+
+.features-grid {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.feature-card {
+    background-color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.icon-circle {
+    background-color: #007BFF;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-card svg {
+    width: 30px;
+    height: 30px;
+    color: white;
+}
+
+/* Benefits Section */
+.benefits {
+    padding: 60px 0;
+    background-color: #fff;
+}
+
+.benefits-grid {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.benefit-card {
+    background-color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.benefit-card svg {
+    width: 40px;
+    height: 40px;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+/* Testimonials Section */
+.testimonials {
+    padding: 60px 0;
+    background-color: #f9f9f9;
+}
+
+.testimonials-grid {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.testimonial-card {
+    background-color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.testimonial-card p {
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.testimonial-author img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.testimonial-author div {
+    text-align: left;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .features-grid, .benefits-grid, .testimonials-grid {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,170 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/attendance.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %> <!-- Navigation bar -->
+
+    <div class="attendance-container">
+        <div class="attendance-header">
+            <h1>My Attendance</h1>
+            <div class="attendance-stats">
+                <div class="stat-card">
+                    <div class="stat-title">Total Classes</div>
+                    <div class="stat-value"><%= totalClasses %></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Present</div>
+                    <div class="stat-value"><%= presentCount %></div>
+                    <div class="stat-change">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        <%= attendancePercentage %>%
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Absent</div>
+                    <div class="stat-value"><%= absentCount %></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <select class="filter-select" id="monthFilter">
+                <option value="">All Months</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+            <select class="filter-select" id="statusFilter">
+                <option value="">All Status</option>
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+            </select>
+        </div>
+
+        <div class="attendance-table-container">
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Time</th>
+                        <th>Verified By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% attendance.forEach(record => { %>
+                        <tr>
+                            <td class="date-time">
+                                <%= new Date(record.date).toLocaleDateString('en-US', { 
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                }) %>
+                            </td>
+                            <td>
+                                <span class="status-badge status-<%= record.status.toLowerCase() %>">
+                                    <%= record.status %>
+                                </span>
+                            </td>
+                            <td>
+                                <% if (record.location) { %>
+                                    <div class="location-info">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                            <circle cx="12" cy="10" r="3"></circle>
+                                        </svg>
+                                        <%= record.location.coordinates[1].toFixed(6) %>, 
+                                        <%= record.location.coordinates[0].toFixed(6) %>
+                                        <% if (record.location.accuracy) { %>
+                                            (±<%= record.location.accuracy %>m)
+                                        <% } %>
+                                    </div>
+                                <% } else { %>
+                                    <span class="text-gray-500">No location data</span>
+                                <% } %>
+                            </td>
+                            <td class="date-time">
+                                <%= new Date(record.date).toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
+                            </td>
+                            <td>
+                                <% if (record.verifiedBy) { %>
+                                    <%= record.verifiedBy.name %>
+                                <% } else { %>
+                                    <span class="text-gray-500">Not verified</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <button class="pagination-button" onclick="changePage(<%= currentPage - 1 %>)">Previous</button>
+            <% } %>
+            
+            <% for(let i = 1; i <= totalPages; i++) { %>
+                <button class="pagination-button <%= currentPage === i ? 'active' : '' %>" 
+                        onclick="changePage(<%= i %>)">
+                    <%= i %>
+                </button>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+                <button class="pagination-button" onclick="changePage(<%= currentPage + 1 %>)">Next</button>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        function changePage(page) {
+            const monthFilter = document.getElementById('monthFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            let url = `/student/attendance?page=${page}`;
+            if (monthFilter) url += `&month=${monthFilter}`;
+            if (statusFilter) url += `&status=${statusFilter}`;
+            
+            window.location.href = url;
+        }
+
+        document.getElementById('monthFilter').addEventListener('change', function() {
+            changePage(1);
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            changePage(1);
+        });
+
+        // Set initial filter values from URL params
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const month = urlParams.get('month');
+            const status = urlParams.get('status');
+            
+            if (month) document.getElementById('monthFilter').value = month;
+            if (status) document.getElementById('statusFilter').value = status;
+        });
+    </script>
+
+    <%- include('../includes/end.ejs') %> <!-- Footer -->
+</body>
+</html>

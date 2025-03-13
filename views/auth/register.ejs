@@ -1,0 +1,230 @@
+<%- include('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/auth.css">
+<script>
+    // Get the server URL from environment
+    const SERVER_URL = '<%= process.env.SERVER_URL %>';
+    
+    // Function to get full URL for any route
+    function getFullUrl(path) {
+        return `${SERVER_URL}${path}`;
+    }
+
+    // Update all href attributes to use SERVER_URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.getElementsByTagName('a');
+        for(let link of links) {
+            if(link.href && link.href.startsWith(window.location.origin)) {
+                const path = link.href.substring(window.location.origin.length);
+                link.href = getFullUrl(path);
+            }
+        }
+    });
+</script>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <!-- User Selection Modal -->
+    <div id="userTypeModal" class="modal <%= !userType ? 'show' : '' %>">
+        <div class="modal-content">
+            <h2>Choose Registration Type</h2>
+            <p>Are you registering as a Student or an Admin?</p>
+            <div class="modal-buttons">
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/auth/register?type=student')" class="btn btn-primary">Student</a>
+                <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/auth/register?type=admin')" class="btn btn-secondary">Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <main class="form-container">
+        <div class="form-card">
+            <h1>Register as <%= userType === 'admin' ? 'Admin' : 'Student' %></h1>
+            <p class="form-subtitle">Please fill in your details below</p>
+
+            <% if (errorMessage) { %>
+                <div class="alert alert-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span><%= errorMessage %></span>
+                </div>
+            <% } %>
+
+            <% if (successMessage) { %>
+                <div class="alert alert-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9 12l2 2l4 -4"></path>
+                    </svg>
+                    <span><%= successMessage %></span>
+                </div>
+            <% } %>
+
+            <form id="registrationForm" class="auth-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="userType" value="<%= userType %>">
+
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required value="<%= oldInput ? oldInput.name : '' %>">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required value="<%= oldInput ? oldInput.email : '' %>">
+                </div>
+
+                <% if (userType === 'student') { %>
+                    <div class="form-group">
+                        <label for="rollNo">Roll Number</label>
+                        <input type="text" id="rollNo" name="rollNo" required value="<%= oldInput ? oldInput.rollNo : '' %>">
+                    </div>
+                <% } %>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+
+                <button type="submit" class="submit-btn" id="registerButton">
+                    Register
+                    <div class="spinner" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                </button>
+            </form>
+
+            <p class="login-link">Already have an account? <a href="javascript:void(0)" onclick="window.location.href = getFullUrl('/auth/login')">Login here</a></p>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const registerButton = document.getElementById('registerButton');
+            const spinner = registerButton.querySelector('.spinner');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                registerButton.disabled = true;
+                spinner.style.display = 'inline-block';
+
+                try {
+                    const formData = new FormData(form);
+                    const data = {};
+                    formData.forEach((value, key) => {
+                        data[key] = value;
+                    });
+
+                    const response = await fetch(`${SERVER_URL}/auth/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'CSRF-Token': data._csrf
+                        },
+                        body: JSON.stringify(data),
+                        credentials: 'include'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        const result = await response.json();
+                        if (result.success) {
+                            window.location.href = getFullUrl(result.redirectUrl);
+                        } else {
+                            showError(result.message || 'Registration failed');
+                            registerButton.disabled = false;
+                            spinner.style.display = 'none';
+                        }
+                    } else {
+                        window.location.href = response.url.replace(window.location.origin, SERVER_URL);
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showError('An error occurred during registration. Please try again.');
+                    registerButton.disabled = false;
+                    spinner.style.display = 'none';
+                }
+            });
+
+            function showError(message) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>${message}</span>
+                `;
+                const container = document.querySelector('.form-card');
+                const existingAlert = container.querySelector('.alert');
+                if (existingAlert) {
+                    container.removeChild(existingAlert);
+                }
+                container.insertBefore(alertDiv, form);
+            }
+        });
+    </script>
+
+    <%- include('../includes/end.ejs') %>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .invalid {
+            border-color: #dc3545 !important;
+            background-color: #fff8f8;
+        }
+    </style>
+</body>
+</html>
